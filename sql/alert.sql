@@ -16,5 +16,5 @@ CREATE TABLE alert (
     custom_msg_body TEXT default NULL,
     PRIMARY KEY (alert_id),
     KEY `object_type` (`object_type`,`object_id`)
-) ENGINE=MyISAM;
+) ENGINE=InnoDB;
 

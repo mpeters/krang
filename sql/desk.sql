@@ -9,7 +9,7 @@ CREATE TABLE desk (
     name varchar(255), 
     ord int(10) unsigned, 
     PRIMARY KEY (desk_id)
-) ENGINE=MyISAM;
+) ENGINE=InnoDB;
 
 
 --
