@@ -26,7 +26,7 @@ CREATE TABLE schedule (
         PRIMARY KEY (schedule_id),
         INDEX       (object_type, object_id),
         INDEX       (next_run)
-) ENGINE=InnoDB;
+) ROW_FORMAT=DYNAMIC ENGINE=InnoDB;
 
 /* add default scheduled tasks for tmp cleaning, session expiration,
 DB analyze runs and rate_limit cleaning */

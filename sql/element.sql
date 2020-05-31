@@ -11,7 +11,7 @@ CREATE TABLE element (
         INDEX       (parent_id),
         INDEX       (ord),
         INDEX  element_root_id_class (root_id, class(100))
-);
+) ROW_FORMAT=DYNAMIC ENGINE=InnoDB;
 
 /* element_index holds indexed data managed by Krang::Element */
 DROP TABLE IF EXISTS element_index;
@@ -20,4 +20,4 @@ CREATE TABLE element_index (
         value       VARCHAR(255),
         INDEX(element_id),
         INDEX(value)
-);
+) ROW_FORMAT=DYNAMIC ENGINE=InnoDB;

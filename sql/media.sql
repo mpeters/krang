@@ -33,7 +33,7 @@ CREATE TABLE media (
     KEY (category_id), KEY (media_type_id),
     KEY (url), KEY (title),
     KEY (checked_out_by), UNIQUE KEY (media_uuid)
-) ENGINE=InnoDB;
+) ROW_FORMAT=DYNAMIC ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS media_version;
 
@@ -48,7 +48,7 @@ CREATE TABLE media_version (
     PRIMARY KEY (media_id, version),
     KEY (media_id),
     KEY (version)
-) ENGINE=InnoDB;
+) ROW_FORMAT=DYNAMIC ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS media_type;
 
@@ -60,7 +60,7 @@ CREATE TABLE media_type (
     media_type_id   smallint unsigned NOT NULL auto_increment,
     name            varchar(255) NOT NULL,
     PRIMARY KEY (media_type_id)
-) ENGINE=InnoDB;
+) ROW_FORMAT=DYNAMIC ENGINE=InnoDB;
 
 -- Default data for media_type
 
@@ -102,5 +102,5 @@ CREATE TABLE media_tag (
         ord             SMALLINT UNSIGNED NOT NULL,
         INDEX(tag),
         INDEX(media_id, ord)
-) ENGINE=InnoDB;
+) ROW_FORMAT=DYNAMIC ENGINE=InnoDB;
 

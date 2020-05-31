@@ -5,7 +5,7 @@ CREATE TABLE publish_story_location (
         preview        BOOL NOT NULL,
         path           VARCHAR(255) NOT NULL,
         INDEX(story_id, preview)
-);
+) ROW_FORMAT=DYNAMIC ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS publish_media_location;
 CREATE TABLE publish_media_location (
@@ -13,5 +13,5 @@ CREATE TABLE publish_media_location (
         preview        BOOL NOT NULL,
         path           VARCHAR(255) NOT NULL,
         INDEX(media_id, preview)
-);
+) ROW_FORMAT=DYNAMIC ENGINE=InnoDB;
 

@@ -27,7 +27,7 @@ CREATE TABLE story (
         INDEX(class),
         INDEX(published_version),
         UNIQUE INDEX (story_uuid)
-);
+) ROW_FORMAT=DYNAMIC ENGINE=InnoDB;
 
 /* story_version holds version data managed by Krang::Story */
 DROP TABLE IF EXISTS story_version;
@@ -36,7 +36,7 @@ CREATE TABLE story_version (
         version         SMALLINT UNSIGNED NOT NULL,
         data            MEDIUMBLOB,
         PRIMARY KEY (story_id, version)
-);
+) ROW_FORMAT=DYNAMIC ENGINE=InnoDB;
 
 /* story_category holds links between stories and categories managed
    by Krang::Story */
@@ -50,7 +50,7 @@ CREATE TABLE story_category (
         INDEX (category_id),
         INDEX (url),
         INDEX (ord)
-);
+) ROW_FORMAT=DYNAMIC ENGINE=InnoDB;
 
 /* story_contrib holds links between stories and contributors managed
    by Krang::Story */
@@ -62,7 +62,7 @@ CREATE TABLE story_contrib (
         ord             SMALLINT UNSIGNED NOT NULL,
         PRIMARY KEY (story_id, contrib_id, contrib_type_id),
         INDEX (ord)
-);
+) ROW_FORMAT=DYNAMIC ENGINE=InnoDB;
 
 /* story_category_link holds entries about category-link elements between a story and a category */
 DROP TABLE IF EXISTS story_category_link;
@@ -80,7 +80,7 @@ CREATE TABLE story_category_link (
         INDEX (category_id, publish_if_modified_story_below_cat),
         INDEX (category_id, publish_if_modified_media_in_cat),
         INDEX (category_id, publish_if_modified_media_below_cat)
-);
+) ROW_FORMAT=DYNAMIC ENGINE=InnoDB;
 
 /* story_tag holds tag information about stories managed by Krang::Story */
 DROP TABLE IF EXISTS story_tag;
@@ -91,4 +91,4 @@ CREATE TABLE story_tag (
         ord             SMALLINT UNSIGNED NOT NULL,
         INDEX(tag),
         INDEX(story_id, ord)
-) ENGINE=InnoDB;
+) ROW_FORMAT=DYNAMIC ENGINE=InnoDB;

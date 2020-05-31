@@ -5,4 +5,4 @@ CREATE TABLE my_pref (
         user_id int(10) unsigned NOT NULL,
         value   VARCHAR(255) NOT NULL,
         PRIMARY KEY (user_id, id)	
-);
+) ROW_FORMAT=DYNAMIC ENGINE=InnoDB;

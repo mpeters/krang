@@ -16,7 +16,7 @@ CREATE TABLE user (
         password_changed INT UNSIGNED,
         KEY (login),
         INDEX (hidden)
-);
+) ROW_FORMAT=DYNAMIC ENGINE=InnoDB;
 
 /* default account 'admin', password 'whale' */
 INSERT INTO user (email, login, password, first_name, last_name, password_changed) VALUES

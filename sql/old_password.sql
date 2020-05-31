@@ -6,6 +6,6 @@ CREATE TABLE old_password (
         password    VARCHAR(255) NOT NULL,
         timestamp   TIMESTAMP,
         INDEX (user_id)
-);
+) ROW_FORMAT=DYNAMIC ENGINE=InnoDB;
 
 INSERT INTO old_password (user_id, password) VALUES (1, 'f1a93f635e172bd5be55ae08dd41553a');

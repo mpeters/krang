@@ -5,4 +5,4 @@ CREATE TABLE sessions (
     id char(32) not null primary key,
     a_session mediumblob,
     last_modified timestamp
- );
+) ROW_FORMAT=DYNAMIC ENGINE=InnoDB;

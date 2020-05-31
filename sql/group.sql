@@ -34,7 +34,7 @@ CREATE TABLE group_permission (
         asset_media          ENUM ("hide", "read-only", "edit") NOT NULL DEFAULT "hide",
         asset_template       ENUM ("hide", "read-only", "edit") NOT NULL DEFAULT "hide",
         INDEX (group_uuid)
-);
+) ROW_FORMAT=DYNAMIC ENGINE=InnoDB;
 
 /* set up default groups w/ null UUIDs - getting real ones via Krang::UUID 
    would be better, but how? */
@@ -51,7 +51,7 @@ CREATE TABLE desk_group_permission (
         permission_type ENUM ("hide", "read-only", "edit") NOT NULL DEFAULT "edit",
         PRIMARY KEY (desk_id, group_id),
         INDEX (group_id)
-);
+) ROW_FORMAT=DYNAMIC ENGINE=InnoDB;
 
 /* set up default desk permissions */
 INSERT INTO desk_group_permission VALUES (1, 1, "edit");
@@ -68,7 +68,7 @@ CREATE TABLE user_group_permission (
         group_id	SMALLINT UNSIGNED NOT NULL,
         PRIMARY KEY (user_id, group_id),
         INDEX (group_id)
-);
+) ROW_FORMAT=DYNAMIC ENGINE=InnoDB;
 
 /* set default (admin) user permissions for 'admin' and 'system' */
 INSERT INTO user_group_permission VALUES (1,1);
@@ -82,7 +82,7 @@ CREATE TABLE category_group_permission (
         permission_type ENUM ("hide", "read-only", "edit") NOT NULL DEFAULT "edit",
         PRIMARY KEY (category_id, group_id),
         INDEX (group_id)
-);
+) ROW_FORMAT=DYNAMIC ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS user_category_permission_cache;
 CREATE TABLE user_category_permission_cache (
@@ -92,4 +92,4 @@ CREATE TABLE user_category_permission_cache (
         may_edit    BOOL NOT NULL DEFAULT "0",
         PRIMARY KEY (category_id, user_id),
         INDEX (user_id)
-);
+) ROW_FORMAT=DYNAMIC ENGINE=InnoDB;

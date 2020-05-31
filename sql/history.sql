@@ -15,5 +15,5 @@ CREATE TABLE history (
     origin varchar(255) default NULL,
     timestamp datetime default NULL,
     INDEX (object_type, object_id)
-) ENGINE=InnoDB;
+) ROW_FORMAT=DYNAMIC ENGINE=InnoDB;
 
