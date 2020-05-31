@@ -163,7 +163,7 @@ sub output {
     }
 
     # add the Krang version, and product_name
-    foreach my $name qw(version product_name) {
+    foreach my $name (qw(version product_name)) {
         $template->param("krang_$name" => pkg('Info')->$name)
           if $template->query(name => "krang_$name");
     }
