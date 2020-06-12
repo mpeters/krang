@@ -1,5 +1,3 @@
-*combined.*.js*
-*minified.js*
-*/minified.js*
-*minified.css*
-*/minified.css*
+# ignore everything because addons just dump stuff here
+# any assets added need to be put into git directly
+*
