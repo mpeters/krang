@@ -315,11 +315,13 @@ sub forgot_pw {
                 }
             );
 
-            my $msg_tmpl = $self->load_tmpl('forgot_pw_email.tmpl');
+            my $msg_tmpl = $self->load_tmpl('forgot_pw_email.tmpl', die_on_bad_params => 0);
             $msg_tmpl->param(
-                site_url => $site_url,
-                ticket   => $ticket,
-                username => $user->login,
+                site_url      => $site_url,
+                site_port     => $port,
+                site_hostname => InstanceHostName,
+                ticket        => $ticket,
+                username      => $user->login,
             );
 
             $sender->MailMsg(
