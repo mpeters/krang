@@ -2,6 +2,43 @@
 
 This document contains a list of changes for each release of Krang.
 
+=head2 3.25 - June 15, 2020
+
+=over
+
+=item *
+
+Fix last modification date in Krang FTP listings
+
+=item *
+
+Add build support for RHEL/CentOS 6/7
+
+=item *
+
+Upgrade Apache/mod_perl/mod_ssl and lots of Perl modules to work with RHEL/CentOS 6/7
+
+=item *
+
+Remove any legacy CVS bits
+
+=item *
+
+Upgrade all MySQL tables to use InnoDB and have DYNAMIC row layout (to support
+new MySQL features like Multi-Byte UTF8)
+
+=item *
+
+Remove lots of deprecated Perl usages
+
+=item *
+
+Allow F<krang_build> to build a single module
+
+=item *
+
+Allow more customization of forgot-pw email template by addons
+
 =head2 3.24 - October 21, 2013
 
 =over
