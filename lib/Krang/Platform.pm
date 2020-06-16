@@ -123,7 +123,7 @@ END
     # check that Perl is right for this build
     my %params = $pkg->build_params();
 
-    my $perl = join('.', (map { ord($_) } split("", $^V, 3)));
+    my $perl = sprintf "%vd", $^V;
     if ($perl ne $params{Perl}) {
         die <<END;
 
