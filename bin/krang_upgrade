@@ -482,7 +482,7 @@ sub install_new_krang {
         print "  Fixing SSL symlinks\n";
 
         # go into the conf/ssl.* dirs
-        foreach my $ext qw(crl crt csr key prm) {
+        foreach my $ext (qw(crl crt csr key prm)) {
             my $dir = catdir($install_path, 'conf', "ssl.$ext");
             chdir($dir)
               or die "Could not change into directory $dir : $!";
