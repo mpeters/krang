@@ -258,7 +258,7 @@ sub check_prereqs {
     # LOAD OLD KRANG_CONF
     # Start by getting old conf valid directives
     my $get_directives_perl = qq( print join("\\t", \@Krang::Conf::VALID_DIRECTIVES). "\\n"; );
-    my $get_directives_cmd  = "KRANK_CONF_NOCHECK=1 KRANG_CONF=$krang_conf $PERL_BIN";
+    my $get_directives_cmd  = "KRANG_CONF_NOCHECK=1 KRANG_CONF=$krang_conf $PERL_BIN";
     $get_directives_cmd .=
       " -MKrang::Conf -e '$get_directives_perl' && echo \"Success $uniqueness\"";
 
@@ -618,7 +618,7 @@ sub apply_upgrades {
         $package =~ s/\.pm$//;
         my $no_db = $options{'no-db'} ? 1 : 0;
 
-        my $upgrade_cmd = "KRANK_CONF_NOCHECK=1 KRANG_ROOT=$KrangRoot PERL5LIB=$perl5lib $PERL_BIN";
+        my $upgrade_cmd = "KRANG_CONF_NOCHECK=1 KRANG_ROOT=$KrangRoot PERL5LIB=$perl5lib $PERL_BIN";
         $upgrade_cmd .=
           " -M$package -e 'my \$ug = $package->new(); \$ug->upgrade(no_db => $no_db)'";
         system($upgrade_cmd) && die("Error using upgrade module '$module'");

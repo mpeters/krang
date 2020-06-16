@@ -383,7 +383,7 @@ Sanity-check Krang configuration.  This will die() with an error
 message if something is wrong with the configuration file.
 
 This is run when the Krang::Conf loads unless the environment variable
-"KRANK_CONF_NOCHECK" is set to a true value.
+"KRANG_CONF_NOCHECK" is set to a true value.
 
 =cut
 
@@ -473,7 +473,7 @@ sub _broked {
 }
 
 # run the check ASAP, unless we're in upgrade mode
-__PACKAGE__->check() unless ($ENV{KRANK_CONF_NOCHECK});
+__PACKAGE__->check() unless ($ENV{KRANG_CONF_NOCHECK});
 
 =back
 
