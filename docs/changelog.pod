@@ -24,6 +24,10 @@ Remove any legacy CVS bits
 
 =item *
 
+Support MySQL Multi-byte UTF8 (emojis)
+
+=item *
+
 Upgrade all MySQL tables to use InnoDB and have DYNAMIC row layout (to support
 new MySQL features like Multi-Byte UTF8)
 
