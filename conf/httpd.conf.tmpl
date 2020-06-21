@@ -236,6 +236,12 @@ Listen <tmpl_var InstanceApacheAddr>:<tmpl_if InstanceSSLPort><tmpl_var Instance
       ErrorDocument 500 /bug.pl?ise=1
    </Location>
 
+   <Location /krang-ping>
+      SetHandler perl-script
+      PerlModule Krang::Ping
+      PerlHandler Krang::Ping
+   </Location>
+
    <tmpl_loop InstanceLoop>
       <Location /<tmpl_var InstanceName>>
          PerlSetVar        flavor root

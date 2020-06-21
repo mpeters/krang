@@ -219,15 +219,17 @@ sub trans_handler ($$) {
             }
         }
 
-        # stop other requests unless they're for the root
-        unless( $uri eq '/' ) {
+        # stop other requests unless they're for the root or ping
+        unless( $uri eq '/'  || $uri eq '/krang-ping' ) {
             debug("Can't access anything but root or static files if no instance is set");
             return FORBIDDEN;
         }
 
-        # We're looking at the root.  Set handler to show list of instances
-        $r->handler("perl-script");
-        $r->push_handlers(PerlHandler => \&instance_menu);
+        if( $uri eq '/' ) {
+            # We're looking at the root.  Set handler to show list of instances
+            $r->handler("perl-script");
+            $r->push_handlers(PerlHandler => \&instance_menu);
+        }
 
         return DECLINED;
 

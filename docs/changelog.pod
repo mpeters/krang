@@ -43,6 +43,10 @@ Allow F<krang_build> to build a single module
 
 Allow more customization of forgot-pw email template by addons
 
+=item *
+
+Added SafeStopSeconds and /krang-ping URL to make it easier to manage Krang instances behind a Load Balancer
+
 =head2 3.24 - October 21, 2013
 
 =over

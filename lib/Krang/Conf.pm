@@ -72,6 +72,7 @@ our @VALID_DIRECTIVES;
   PreviewSSL
   ReservedURLs
   RewriteLogLevel
+  SafeStopSeconds
   SavedVersionsPerMedia
   SavedVersionsPerStory
   SavedVersionsPerTemplate

@@ -108,7 +108,7 @@ use Krang::ClassLoader Conf => qw(KrangRoot InstanceHostName Skin KrangUser Kran
   InstanceApacheAddr InstanceApachePort InstanceSSLCertificateFile
   InstanceSSLCertificateKeyFile InstanceSSLCertificateChainFile
   InstanceSSLCACertificateFile InstanceSSLCARevocationFile InstanceSSLPort
-  RewriteLogLevel AvailableLanguages BrowserSpeedBoost
+  RewriteLogLevel AvailableLanguages BrowserSpeedBoost SafeStopSeconds
 );
 use Krang::ClassLoader 'File';
 use Krang::ClassLoader Localization => qw(%LANG);
@@ -150,6 +150,9 @@ my $offline_pid_file = catfile(KrangRoot, 'tmp', 'httpd_offline.pid');
 my $running         = is_pid_running($pid_file);
 my $offline_running = is_pid_running($offline_pid_file);
 
+# location of file to suspend Krang::Ping
+our $SUSPEND_FILE = catfile(KrangRoot, 'tmp', 'suspend_ping');
+
 # make language string for messages
 my %languages = ();
 @languages{AvailableLanguages, 'en'} = ();
@@ -174,22 +177,8 @@ if ($command eq 'stop') {
         die "krang_apachectl $command: httpd not running\n";
     }
 
-    if( $running ) {
-        if (kill 15, $running) {
-            print "krang_apachectl $command: httpd stopped\n";
-            exit;
-        } else {
-            die "krang_apachectl $command: httpd could not be stopped\n";
-        }
-    }
-    if( $offline_running ) {
-        if (kill 15, $offline_running) {
-            print "krang_apachectl $command: httpd stopped\n";
-            exit;
-        } else {
-            die "krang_apachectl $command: httpd could not be stopped\n";
-        }
-    }
+    stop_pid($running,         $pid_file,         'httpd')         if $running;
+    stop_pid($offline_running, $offline_pid_file, 'offline httpd') if $offline_running;
 }
 
 if ($command eq 'restart') {
@@ -445,6 +434,23 @@ sub is_pid_running {
 
 sub stop_pid {
     my ($pid, $pid_file, $which) = @_;
+
+    # create suspend file so ping can stop responding
+    open my $suspend_fh, '>', $SUSPEND_FILE
+      or die "Can't create ping suspend file $SUSPEND_FILE: $!";
+    print {$suspend_fh} $$;
+
+    if( SafeStopSeconds ) {
+        print "krang_apachectl $command: waiting " . SafeStopSeconds . " seconds to stop...\n";
+        sleep SafeStopSeconds;
+    }
+
+    # remove ping file as it's now time to shutdown
+    if (-e $SUSPEND_FILE) {
+        unlink $SUSPEND_FILE
+          or die "Can't remove suspend file $SUSPEND_FILE: $!";
+    }
+
     if (kill 15, $pid) {
         print "krang_apachectl $command: waiting for $which to stop";
     } else {
