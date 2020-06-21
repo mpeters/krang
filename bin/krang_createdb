@@ -69,7 +69,7 @@ provide it here.
 =item --hostname [host]
 
 If you are running MySQL on another host then you'll need to
-provide it here.
+provide it here. If not provided, it will use what is in C<krang.conf>
 
 =item --verbose
 
@@ -131,7 +131,7 @@ use Krang::ClassFactory qw(pkg);
 use Term::Prompt qw(prompt);
 use Krang;
 use Krang::ClassLoader Conf =>
-  qw(InstanceElementSet KrangRoot InstanceDBName DBUser DBPass Charset);
+  qw(InstanceElementSet KrangRoot InstanceDBName DBUser DBPass DBHost Charset);
 use Krang::ClassLoader 'File';
 use Krang::ClassLoader 'Charset';
 
@@ -170,6 +170,9 @@ if ($all) {
     pod2usage("Unrecognized instance '$instances[0]'")
       unless grep { $_ eq $instances[0] } pkg('Conf')->instances;
 }
+
+# default to configured db host
+$hostname ||= DBHost;
 
 # make sure MySQL has what it needs
 my $test_mysql = qq{mysql -uroot -e "select 'world' as hello" };
