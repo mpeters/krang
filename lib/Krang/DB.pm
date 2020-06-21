@@ -103,8 +103,7 @@ sub dbh {
 
     $connect_options{mysql_socket} = DBSock if DBSock;
 
-    my $is_utf8 = pkg('Charset')->is_utf8;
-    $connect_options{mysql_enable_utf8} = 1 if $is_utf8;
+    $connect_options{mysql_enable_utf8mb4} = 1 if pkg('Charset')->is_utf8;
 
     # merge in options from args
     $connect_options{$_} = $args{$_} for keys %args;

@@ -65,6 +65,7 @@ my %MYSQL_MAP = (
     iso88599    => 'latin5',
     cp1252      => 'latin1',
     windows1252 => 'latin1',
+    utf8        => 'utf8mb4',
 );
 
 sub mysql_charset {
