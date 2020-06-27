@@ -307,15 +307,6 @@ sub system_error_hook {
     return "Unknown error occurred.";
 }
 
-# override Net::FTPServer's forking sub so that we properly close
-# our IO handles to the terminal. Not sure why Net::FTPServer doesn't
-# do this because it does try. But Proc::Daemon does a better job and
-# actually gets it right
-sub _fork_into_background {
-    my $self = shift;
-    Proc::Daemon::Init();
-}
-
 
 1;
 
