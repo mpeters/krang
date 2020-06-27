@@ -179,6 +179,7 @@ if ($command eq 'stop') {
 
     stop_pid($running,         $pid_file,         'httpd')         if $running;
     stop_pid($offline_running, $offline_pid_file, 'offline httpd') if $offline_running;
+    exit;
 }
 
 if ($command eq 'restart') {
