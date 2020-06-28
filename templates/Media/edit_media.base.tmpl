@@ -246,6 +246,16 @@ Krang.onload( function() {
     </td>
     </tr>
 
+    <tmpl_if enable_cdn_support>
+    <tr class="even">
+    <th>*<tmpl_lang CDN Enabled?></th>
+    <td>
+     <input name="cdn_enabled" style="width: 12%" value="1" type="radio"> <tmpl_lang Yes>
+     <input name="cdn_enabled" style="width: 12%" value="0" type="radio" checked> <tmpl_lang No>
+    </td>
+    </tr>
+    </tmpl_if>
+
   </tbody>
   </table>
 
@@ -332,6 +342,15 @@ Krang.onload( function() {
       <input name="media_file" type="file">
       </td>
       </tr>
+
+      <tmpl_if enable_cdn_support>
+      <tr class="even">
+      <th class="f">*<tmpl_lang CDN Enabled?></th>
+      <td class="l">
+       <input name="cdn_enabled" style="width: 12%" value="1" type="radio" <tmpl_if cdn_enabled>checked</tmpl_if>> <tmpl_lang Yes>
+       <input name="cdn_enabled" style="width: 12%" value="0" type="radio" <tmpl_unless cdn_enabled>checked</tmpl_unless>> <tmpl_lang No>
+      </tr>
+      </tmpl_if>
 
     </tmpl_if>
 

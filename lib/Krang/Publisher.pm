@@ -1649,6 +1649,11 @@ sub url_for {
 
     return '' unless ref($object);
 
+    # if it's CDN enabled
+    if( $object->can("cdn_enabled") && $object->cdn_enabled ) {
+        return $object->cdn_url;
+    }
+
     # duck typing object check
     for my $method (qw(url preview_url)) {
         unless ($object->can($method)) {
@@ -2423,7 +2428,13 @@ sub _write_media {
     }
 
     # return URL
-    $self->{is_preview} ? return $media->preview_url : return $media->url;
+    if( $self->{is_preview} ) {
+        return $media->preview_url;
+    } elsif($media->cdn_enabled ) {
+        return $media->cdn_url;
+    } else {
+        return $media->url;
+    }
 
 }
 

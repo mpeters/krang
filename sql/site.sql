@@ -11,5 +11,6 @@ CREATE TABLE site (
        preview_path	varchar(255),
        publish_path	varchar(255) NOT NULL,
        creation_date    datetime NOT NULL,
+       cdn_url          varchar(255),
        primary key (site_id)
 ) ROW_FORMAT=DYNAMIC ENGINE=InnoDB;

@@ -86,6 +86,12 @@ save_stay = function()
 <td><input name="preview_path" value="<tmpl_var escape=html preview_path>"></td>
 </tr>
 
+<tr<tmpl_if error_invalid_cdn_url> class="err"</tmpl_if>>
+<th><tmpl_lang CDN URL></th>
+<td><input name="cdn_url" value="<tmpl_var escape=html cdn_url>"></td>
+</tr>
+
+
 </tbody>
 
 </table>

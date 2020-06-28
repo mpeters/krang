@@ -138,6 +138,13 @@ Krang.onload( function() {
   </td>
   </tr>
 
+  <tmpl_if enable_cdn_support>
+  <tr>
+  <th class="f"><tmpl_lang CDN Enabled?></th>
+  <td class="l"><tmpl_if cdn_enabled><tmpl_lang Yes><tmpl_else><tmpl_lang No></tmpl_if></td>
+  </tr>
+  </tmpl_if>
+
 </tmpl_if>
 
 </tbody>

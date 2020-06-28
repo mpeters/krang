@@ -190,6 +190,13 @@ publish_selected = function() {
   <tr>
   <th><tmpl_lang Type></th>
   <td><tmpl_var type_chooser></td>
+  <tmpl_if enable_cdn_support>
+  <th><tmpl_lang CDN Enabled></th>
+  <td class="quarter">
+    <input name="search_cdn_enabled" value="1" type="radio" <tmpl_if search_cdn_enabled>checked</tmpl_if>> <tmpl_lang Yes>
+    <input name="search_cdn_enabled" value="0" type="radio" <tmpl_if no_search_cdn_enabled>checked</tmpl_if>> <tmpl_lang No>
+  </td>
+  </tmpl_if>
   </tr>
 
   </tbody>

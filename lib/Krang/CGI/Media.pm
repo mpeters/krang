@@ -4,7 +4,7 @@ use warnings;
 use Krang::ClassLoader base => 'CGI::ElementEditor';
 use Krang::ClassFactory qw(pkg);
 use Krang::ClassLoader 'Category';
-use Krang::ClassLoader Conf => qw(KrangRoot);
+use Krang::ClassLoader Conf => qw(KrangRoot EnableCDNSupport);
 use Krang::ClassLoader 'ElementLibrary';
 use Krang::ClassLoader History => qw(add_history);
 use Krang::ClassLoader 'HTMLPager';
@@ -360,6 +360,7 @@ sub _do_advanced_find {
       search_media_id
       search_media_type_id
       search_title
+      search_cdn_enabled
       search_tag
       search_creation_date_day
       search_creation_date_month
@@ -499,6 +500,23 @@ sub _do_advanced_find {
           if $t->query(name => 'search_title');
     }
 
+    # search_cdn_enabled
+    my $search_cdn_enabled =
+      defined($q->param('search_cdn_enabled'))
+      ? $q->param('search_cdn_enabled')
+      : $session{KRANG_PERSIST}{pkg('Media')}{search_cdn_enabled};
+
+    if (defined($search_cdn_enabled)) {
+        $find_params->{cdn_enabled} = $search_cdn_enabled;
+        $persist_vars->{cdn_enabled} = $search_cdn_enabled;
+
+        # radio buttons should only be set if we are actually searching with them
+        $t->param(search_cdn_enabled => 1)
+          if $search_cdn_enabled && $t->query(name => 'search_cdn_enabled');
+        $t->param(no_search_cdn_enabled => 1)
+          if !$search_cdn_enabled && $t->query(name => 'no_search_cdn_enabled');
+    }
+
     # search_tag
     my $search_tag =
       defined($q->param('search_tag'))
@@ -596,6 +614,8 @@ sub _do_advanced_find {
         ),
         type_chooser => $self->_media_types_popup_menu(search => 1,),
     );
+
+    $t->param(enable_cdn_support => EnableCDNSupport);
 
     return $t->output();
 }
@@ -879,6 +899,8 @@ sub edit {
 
     $t->param(cancel_changes_owner     => $self->_cancel_edit_changes_owner);
     $t->param(cancel_goes_to_workspace => $self->_cancel_edit_goes_to_workspace);
+
+    $t->param(enable_cdn_support => EnableCDNSupport);
 
     return $t->output();
 }
@@ -1375,6 +1397,8 @@ sub view {
     my $path = $self->query->param('path');
     $t->param(is_root => 1) unless ($path && $path ne '/');
 
+    $t->param(enable_cdn_support => EnableCDNSupport);
+
     return $t->output();
 }
 
@@ -1781,6 +1805,7 @@ sub update_media {
       copyright
       alt_tag
       notes
+      cdn_enabled
     );
 
     # unset the 'published' flag if the category has changed
@@ -1952,6 +1977,7 @@ sub make_media_tmpl_data {
       copyright
       alt_tag
       notes
+      cdn_enabled
     );
 
     foreach my $mf (@m_fields) {
@@ -2035,6 +2061,7 @@ sub make_media_view_tmpl_data {
       copyright
       alt_tag
       notes
+      cdn_enabled
     );
 
     foreach my $mf (@m_fields) {

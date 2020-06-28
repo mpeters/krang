@@ -35,7 +35,7 @@ use FileHandle;
 use constant THUMBNAIL_SIZE     => 35;
 use constant MED_THUMBNAIL_SIZE => 200;
 use constant FIELDS =>
-  qw(media_id media_uuid element_id title category_id media_type_id filename creation_date caption copyright notes url version alt_tag mime_type published published_version preview_version publish_date checked_out_by retired trashed read_only full_text);
+  qw(media_id media_uuid element_id title category_id media_type_id filename creation_date caption copyright notes url version alt_tag mime_type published published_version preview_version publish_date checked_out_by retired trashed read_only cdn_enabled full_text);
 
 # setup exceptions
 use Exception::Class (
@@ -253,6 +253,7 @@ use Krang::ClassLoader MethodMaker => new_with_init => 'new',
       notes
       mime_type
       media_type_id
+      cdn_enabled
       )
   ],
   get_set_with_notify => [
@@ -312,6 +313,7 @@ sub init {
     $self->{retired}       = 0;
     $self->{trashed}       = 0;
     $self->{read_only}     = 0;
+    $self->{cdn_enabled}   = 0;
 
     # Set up temporary permissions
     $self->{may_see}  = 1;
@@ -1276,6 +1278,7 @@ sub find {
         exclude_media_ids  => 1,
         element_index_like => 1,
         full_text          => 1,
+        cdn_enabled        => 1,
     );
 
     # check for invalid params and croak if one is found
@@ -1326,7 +1329,7 @@ sub find {
     # set simple keys
     my @simple_keys = qw( title alt_tag category_id media_type_id filename url
       contrib_id checked_out_by may_see may_edit media_uuid
-      mime_type );
+      mime_type cdn_enabled);
     foreach my $key (keys %args) {
         next unless (defined $args{$key} && length $args{$key});
         if (grep { $key eq $_ } @simple_keys) {
@@ -1991,7 +1994,7 @@ sub mark_as_previewed {
 
 }
 
-=item $media = $media->url();
+=item $media->url();
 
 Returns calculated url of media object based on category_id and filename
 
@@ -2017,7 +2020,7 @@ sub url {
     return $url;
 }
 
-=item * preview_url (read-only)
+=item * $media->preview_url (read-only)
 
 The preview URL for this media object
 
@@ -2032,6 +2035,29 @@ sub preview_url {
     my $site_url         = $site->url;
     my $site_preview_url = $site->preview_url;
     $url =~ s/^\Q$site_url\E/$site_preview_url/;
+
+    return $url;
+}
+
+=item * $media->cdn_url (read-only)
+
+Returns calculated CDN url of media object based on original URL and the Site's CDN URL
+
+=cut
+
+sub cdn_url {
+    my $self = shift;
+
+    croak "illegal attempt to set readonly attribute 'url'.\n"
+      if @_;
+
+    my $url              = $self->url;
+    my $site             = $self->category->site;
+    my $site_url         = $site->url;
+    my $site_cdn_url     = $site->cdn_url;
+    if( $site_cdn_url ) {
+        $url =~ s/^\Q$site_url\E/$site_cdn_url/;
+    }
 
     return $url;
 }
@@ -2317,9 +2343,11 @@ sub serialize_xml {
     $writer->dataElement(creation_date => $self->{creation_date}->datetime);
     $writer->dataElement(publish_date  => $self->{publish_date}->datetime)
       if $self->{publish_date};
-    $writer->dataElement(retired   => $self->retired);
-    $writer->dataElement(trashed   => $self->trashed);
-    $writer->dataElement(read_only => $self->read_only);
+    $writer->dataElement(retired     => $self->retired);
+    $writer->dataElement(trashed     => $self->trashed);
+    $writer->dataElement(read_only   => $self->read_only);
+    $writer->dataElement(cdn_enabled => $self->cdn_enabled);
+    $writer->dataElement(full_text   => $self->full_text);
 
     # tags
     for my $tag ($self->tags) {
@@ -2377,7 +2405,7 @@ sub deserialize_xml {
     my (%complex, %simple);
     @complex{
         qw(media_id filename publish_date creation_date checked_out_by element_id
-          version url published_version category_id media_uuid trashed retired read_only)
+          version url published_version category_id media_uuid trashed retired read_only cdn_enabled full_text)
       }
       = ();
     %simple = map { ($_, 1) } grep { not exists $complex{$_} } (FIELDS);

@@ -35,6 +35,7 @@ our @VALID_DIRECTIVES;
   DisableScheduler
   EnableTemplateCache
   EnableBugzilla
+  EnableCDNSupport
   EnableFTP
   EnablePreviewEditor
   EnableSiteServer

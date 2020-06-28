@@ -16,6 +16,7 @@
                 <xs:element name="preview_url" type="xs:string"/>
                 <xs:element name="publish_path" type="xs:string"/>
                 <xs:element name="preview_path" type="xs:string"/>
+                <xs:element name="cdn_url" type="xs:string" minOccurs="0"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>

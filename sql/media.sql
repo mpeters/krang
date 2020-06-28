@@ -29,6 +29,7 @@ CREATE TABLE media (
     published               bool NOT NULL DEFAULT 0,
     read_only               bool NOT NULL DEFAULT 0,
     full_text               LONGTEXT NULL,
+    cdn_enabled             bool NOT NULL DEFAULT 0,
     PRIMARY KEY (media_id),
     KEY (category_id), KEY (media_type_id),
     KEY (url), KEY (title),

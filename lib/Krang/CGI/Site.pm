@@ -40,7 +40,7 @@ our @history_param_list = (
     'krang_pager_show_big_view', 'krang_pager_sort_field',
     'krang_pager_sort_order_desc',
 );
-our @obj_fields = ('url', 'preview_url', 'publish_path', 'preview_path');
+our @obj_fields = ('url', 'preview_url', 'publish_path', 'preview_path', 'cdn_url');
 
 ##############################
 #####  OVERRIDE METHODS  #####
@@ -109,6 +109,7 @@ sub add {
         $site = pkg('Site')->new(
             url          => undef,
             preview_url  => undef,
+            cdn_url      => undef,
             preview_path => undef,
             publish_path => undef
         );
@@ -565,7 +566,7 @@ sub validate {
             next;
         }
 
-        if ($name eq 'url' or $name eq 'preview_url') {
+        if ($name eq 'url' or $name eq 'preview_url' or $name eq 'cdn_url') {
 
             # check for http://
             if ($val =~ m!https?://!) {

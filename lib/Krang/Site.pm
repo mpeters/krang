@@ -107,9 +107,12 @@ use File::Spec::Functions qw(catdir);
 use constant SITE_RO => qw(site_id site_uuid);
 
 # Read-write fields
-use constant SITE_RW => qw(preview_path
+use constant SITE_RW => qw(
+  preview_path
   preview_url
-  publish_path);
+  publish_path
+  cdn_url
+);
 
 # Globals
 ##########
@@ -171,6 +174,11 @@ via krang_export/krang_import.
 Base URL where site content is found.  Categories and consequently media and
 stories will form their URLs based on this value.
 
+=item * cdn_url
+
+The URL to use for CDN-Enabled media assets. This value will only be used
+during publish when populating templates.
+
 =back
 
 =head2 METHODS
@@ -191,6 +199,8 @@ Constructor for the module that relies on Krang::MethodMaker.  Validation of
 =item * publish_path
 
 =item * url
+
+=item * cdn_url
 
 =back
 
@@ -367,6 +377,8 @@ characters must surround the sub-string).  The valid search fields are:
 =item * site_uuid
 
 =item * url
+
+=item * cdn_url
 
 =back
 
@@ -699,7 +711,7 @@ sub serialize_xml {
     );
 
     $writer->dataElement($_, $self->$_)
-      for qw(site_id site_uuid url preview_url publish_path preview_path);
+      for qw(site_id site_uuid url preview_url publish_path preview_path cdn_url);
     $writer->endTag('site');
 }
 
@@ -756,6 +768,7 @@ sub deserialize_xml {
         # update URLs, ignore paths (these can change now with UUID matches)
         $site->url($data->{url});
         $site->preview_url($data->{preview_url});
+        $site->cdn_url($data->{cdn_url}) if $data->{cdn_url};
     } else {
 
         # create a new site

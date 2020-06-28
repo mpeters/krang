@@ -2,6 +2,23 @@
 
 This document contains a list of changes for each release of Krang.
 
+=head2 3.26 - June 28, 2020
+
+=over
+
+=item *
+
+Added CDN support for media objects. This includes a new C<EnableCDNSupport> config
+directive, C<cdn_url> on sites and C<cdn_enabled> on media objects. When all
+three are set, allows the URL for a media object during publishing to use a CDN
+hostname instead of the base site.
+
+=item *
+
+Fixed media import/export bug where C<full_text> was not saved.
+
+=back
+
 =head2 3.25 - June 15, 2020
 
 =over
