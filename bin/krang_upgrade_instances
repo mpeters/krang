@@ -1,0 +1,226 @@
+#!/usr/bin/env perl
+use warnings;
+use strict;
+
+=head1 NAME
+
+krang_upgrade_instances - Run upgrade modules against older instances
+
+=head1 SYNOPSIS
+
+  # bin/krang_upgrade_instances
+
+=head1 DESCRIPTION
+
+This script will look through all of the installed instances and if any
+are out of date, run the applicable upgrade modules.  This is useful
+if you have to migrate an krang instance from one install to another
+(slowly migrating a cluster, etc).
+
+=head2 What this script does
+
+Following is a list of the tasks the upgrade script will perform.
+
+For each instance:
+
+=over
+
+=item * Compare DB instance to installed instance. If not current
+
+=item * Apply applicable upgrade modules.
+
+=item * Update db_version for each instance.
+
+=item * Output results of upgrade to console.
+
+=back
+
+=head1 OPTIONS
+
+=over
+
+=item --instance
+
+Instead of looking at every instance, just run for a particular instance.
+Can be specified multiple time.
+
+=item --skip-instance
+
+Don't upgrade this particular instance.  This can be specified multiple times.
+
+=item --help
+
+=item --man
+
+=back
+
+=head1 SEE ALSO
+
+Refer to F<docs/upgrade.pod>.
+
+=cut
+
+use File::Spec::Functions qw(catdir catfile splitdir rel2abs canonpath);
+use FindBin qw($RealBin);
+use Config;
+
+BEGIN {
+
+    # Find a KRANG_ROOT based on path to bin
+    unless ($ENV{KRANG_ROOT}) {
+        my @dir = splitdir(canonpath($RealBin));
+        $ENV{KRANG_ROOT} ||= catdir(@dir[0 .. $#dir - 1]);
+    }
+
+    # use $KRANG_ROOT/lib for modules
+    my $lib = catdir($ENV{KRANG_ROOT}, "lib");
+    $ENV{PERL5LIB} =
+      $ENV{PERL5LIB}
+      ? "$ENV{PERL5LIB}:${lib}"
+      : "${lib}";
+    unshift @INC, $lib, "$lib/" . $Config{archname};
+
+    eval { require Krang };
+    warn << "END" and exit(1) if $@;
+######################################################################
+
+Cannot load Krang.
+
+Error message:
+
+$@
+
+######################################################################
+END
+}
+
+use Krang;
+use Krang::ClassFactory qw(pkg);
+use Krang::ClassLoader Conf => qw(KrangRoot);
+use Krang::ClassLoader 'DB' => qw(dbh);
+use Getopt::Long;
+use Pod::Usage;
+use File::Spec::Functions qw(catfile catdir);
+use version;
+
+my ($help, $man, $verbose, @instances, @skip_instances);
+GetOptions(
+    help                            => \$help,
+    man                             => \$man,
+    'verbose'                       => \$verbose,
+    'instance=s'                    => \@instances,
+    'skip_instance|skip-instance=s' => \@skip_instances,
+);
+
+pod2usage(1) if $help;
+pod2usage(-verbose => 2) if $man;
+
+# load the platform file
+my $platform = load_platform();
+
+# use all of the instances if we don't have any
+@instances = pkg('Conf')->instances() if !@instances;
+
+# get the current version
+my $current_version = version->parse($Krang::VERSION);
+
+for my $instance (@instances) {
+    print "INSTANCE: $instance\n";;
+    # skip it if we have to
+    if(grep { $_ eq $instance } @skip_instances) {
+        print "  skipping...\n";
+        next;
+    }
+    pkg('Conf')->instance($instance);
+
+    # get this instance's version
+    my $instance_version = version->parse(get_instance_version());
+    if ($instance_version == $current_version) {
+        print "  already at $instance_version\n";
+        next;
+    } else {
+        print "  upgrading from $instance_version to $current_version\n";
+    }
+
+    # Find upgrade modules
+    my $upmod_path = catfile($ENV{KRANG_ROOT}, 'upgrade');
+    opendir(my $DIR, $upmod_path) || die("Unable to open upgrade directory '$upmod_path': $!\n");
+    my (@upgrade_files, %versions);
+    while(my $file = readdir($DIR)) {
+        next unless -f catfile($upmod_path, $file);
+        next unless $file =~ /^V([\d_]+)\.pm$/;
+        my $version = $1;
+        $version =~ s/_/./g;
+
+        $versions{$file} = version->parse($version);
+        push(@upgrade_files, $file) if $versions{$file} > $instance_version;
+    }
+    closedir($DIR);
+
+    # sort them to make sure we have the right order
+    @upgrade_files = sort { $versions{$a} <=> $versions{$b} } @upgrade_files;
+
+    print "  found " . scalar(@upgrade_files) . " applicable upgrade modules.\n";
+    print "    " . join("\n    ", @upgrade_files) . "\n" if (@upgrade_files && $verbose);
+
+    # Run upgrade modules
+    my $perl5lib = join(':', catdir($ENV{KRANG_ROOT}, 'upgrade'), catdir($ENV{KRANG_ROOT}, 'lib'));
+    foreach my $module (@upgrade_files) {
+        print "  running $module...\n" if $verbose;
+
+        # Get package name by trimming off ".pm"
+        my $package = $module;
+        $package =~ s/\.pm$//;
+
+        my $upgrade_cmd = "KRANG_ROOT=$ENV{KRANG_ROOT} PERL5LIB=$perl5lib KRANG_INSTANCE=$instance";
+        $upgrade_cmd .= " $^X -M$package -e '$package->new()->upgrade_instance(instance => '$instance')'";
+        system($upgrade_cmd) && die("Error using upgrade module '$module'");
+    }
+
+    print "  updating DB to version $current_version\n";
+    my $dbh = dbh(ignore_version => 1);
+    $dbh->do('UPDATE db_version SET db_version = ?', undef, $current_version);
+}
+
+
+############################################################################
+# Helper methods
+############################################################################
+
+# load the platform module for this dist
+sub load_platform {
+    exit_error("Can't find data/build.db.  Do you need to run 'make build'?")
+      unless -e catfile($ENV{KRANG_ROOT}, 'data', 'build.db');
+    require Krang::Platform;
+    my %build_params = Krang::Platform->build_params;
+
+    # add in $KRANG_ROOT/platform for platform build modules
+    my $plib = catdir($ENV{KRANG_ROOT}, "platform");
+    $ENV{PERL5LIB} = "$ENV{PERL5LIB}:${plib}";
+    unshift @INC, $plib;
+
+    print "Loading platform module for '$build_params{Platform}...\n";
+    my $platform = "$build_params{Platform}::Platform";
+    eval "use $platform;";
+    die "Unable to load $platform: $@"
+      if $@;
+
+    return $platform;
+}
+
+sub exit_error {
+    my $cmd = $0;
+    $cmd =~ s/.*\/(.+)$/$1/;
+
+    my $message = shift;
+    print STDERR "\nError: $cmd:  $message\n\n";
+    exit(1);
+}
+
+# Get the version of this instance from the DB
+sub get_instance_version {
+    my $dbh = dbh(ignore_version => 1);
+    my ($version) = $dbh->selectrow_array('SELECT db_version FROM db_version');
+
+    return $version;
+}

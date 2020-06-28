@@ -17,6 +17,12 @@ hostname instead of the base site.
 
 Fixed media import/export bug where C<full_text> was not saved.
 
+=item *
+
+Add F<krang_upgrade_instances> script to upgrade instances in-place to handle
+the case where you migrating from a different installation to a new one with a
+different version.
+
 =back
 
 =head2 3.25 - June 15, 2020

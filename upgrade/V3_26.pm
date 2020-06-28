@@ -9,7 +9,7 @@ use Krang::ClassLoader 'Media';
 sub per_instance {
     my ($self, %args) = @_;
     return if $args{no_db};
-    my $dbh = dbh();
+    my $dbh = dbh(ignore_version => 1);
 
     # add CDN specific fields
     $dbh->do('ALTER TABLE site ADD COLUMN cdn_url VARCHAR(255) AFTER `creation_date`');

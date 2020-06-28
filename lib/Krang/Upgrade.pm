@@ -161,4 +161,18 @@ sub upgrade {
     }
 }
 
+
+sub upgrade_instance {
+    my ($self, %args) = @_;
+    my $instance = delete $args{instance};
+
+    # Switch to that instance
+    pkg('Conf')->instance($instance);
+
+    # Load the dbh, without version checking, to prime cache
+    my $dbh = dbh(ignore_version => 1);
+
+    # Call per_instance(), now that the environment has been established
+    $self->per_instance(%args);
+}
 1;
