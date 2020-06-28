@@ -970,6 +970,10 @@ sub fill_template {
     $params{category_trail_loop} = $self->_build_cat_trail_loop(@_)
       if exists($template_vars{category_trail_loop});
 
+    # add the site's cdn_url
+    $params{site_cdn_url} = $self->_add_site_cdn_url(@_)
+      if exists($template_vars{site_cdn_url});
+
     # add variables passed in by whatever called $self->publish().
     if (defined($args{fill_template_args})) {
         foreach my $key (keys %{$args{fill_template_args}}) {
@@ -1533,6 +1537,15 @@ sub _build_cat_trail_loop {
     }
 
     return \@category_loop;
+}
+
+sub _add_site_cdn_url {
+    my $self = shift;
+    my %args = @_;
+    my $object = $args{element}->object;
+    my $category = $object->isa('Krang::Story') ? $object->category : $object;
+    my $site = $category->site;
+    return $site->cdn_url;
 }
 
 #
