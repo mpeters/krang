@@ -2062,6 +2062,31 @@ sub cdn_url {
     return $url;
 }
 
+=item * $media->publisher_url(publisher => $publisher)
+
+Returns the URL for this media object based on the publish context. This
+could be the preview URL, the CDN URL or the published site URL.
+
+=cut
+
+sub publisher_url {
+    my $self = shift;
+    my %args = @_;
+    my $publisher = $args{publisher};
+
+    my $url_meth;
+    if( $publisher->is_preview ) {
+        $url_meth = 'preview_url';
+    } elsif( $self->cdn_enabled ) {
+        $url_meth = 'cdn_url';
+    } else {
+        $url_meth = 'url';
+    }
+
+    return $self->$url_meth;
+}
+
+
 =item $path = $media->publish_path()
 
 Returns the publish path for the media object, using the site's
