@@ -34,6 +34,7 @@ use Krang::ClassLoader 'Pref';
 use Krang::ClassLoader Session => qw/%session/;
 use Krang::ClassLoader 'Site';
 use Krang::ClassLoader Widget => qw/autocomplete_values/;
+use Krang::ClassLoader Conf => qw/EnableCDNSupport/;
 
 our @history_param_list = (
     'rm',                        'krang_pager_curr_page_num',
@@ -318,6 +319,7 @@ sub edit {
     $t->param(%args) if %args;
 
     $t->param($self->get_tmpl_params($site));
+    $t->param(enable_cdn_support => EnableCDNSupport);
 
     return $t->output();
 }
@@ -486,6 +488,8 @@ sub view {
 
     $t->param($self->get_tmpl_params($site));
     $t->param(site_id => $site_id);
+
+    $t->param(enable_cdn_support => EnableCDNSupport);
 
     return $t->output();
 }

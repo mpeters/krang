@@ -63,10 +63,12 @@ do_edit_site = function()
 <td class="l"><tmpl_var escape=html preview_path></td>
 </tr>
 
+<tmpl_if enable_cdn_support>
 <tr class="even">
 <td class="f"><tmpl_lang CDN URL></td>
 <td class="l"><tmpl_var escape=html cdn_url></td>
 </tr>
+</tmpl_if>
 
 
 </tbody>
