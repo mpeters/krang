@@ -558,12 +558,12 @@ sub install_new_krang {
         }
     };
 
-    my @dirs = grep { -d $_ } map { catdir($install_path, $_) } qw(htdocs conf docs bench);
+    my @dirs = grep { -d $_ } map { catdir($install_path, $_) } qw(htdocs conf docs);
     find($wanted, @dirs);
 
     print "  Setting execute bits on scripts\n";
     # save some time - only search bin/ conf/ docs/ htdocs/ lib/
-    my $binpath = join ' ', map { catdir($install_path, $_) } qw/bin conf docs htdocs lib bench/;
+    my $binpath = join ' ', map { catdir($install_path, $_) } qw/bin conf docs htdocs lib/;
 
     # Set all *.pl files
     my $chmod =
