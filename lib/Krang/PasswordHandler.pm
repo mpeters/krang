@@ -8,9 +8,6 @@ use Krang::ClassLoader 'User';
 use Krang::ClassLoader Localization => qw(localize);
 use Digest::MD5 qw(md5_hex);
 
-use Krang::User;
-my $SALT = $Krang::User::SALT;
-
 sub check_pw {
     my ($class, $pw, @info) = @_;
     my $valid = 0;
@@ -34,8 +31,9 @@ sub _pw_is_used {
 
     # look for a user with that login
     my ($user) = pkg('User')->find(login => $login);
+    my $salt = pkg('User')->SALT();
     if ($user) {
-        return (md5_hex($SALT, $pw) eq $user->password);
+        return (md5_hex($salt, $pw) eq $user->password);
     }
     return 0;
 }
@@ -53,8 +51,9 @@ sub _pw_was_used {
         my $sth = dbh()->prepare_cached('SELECT password FROM old_password WHERE user_id = ?');
         $sth->execute($user->user_id);
         my $old_pws = $sth->fetchall_arrayref();
+        my $salt = pkg('User')->SALT();
         foreach my $row (@$old_pws) {
-            return 1 if (md5_hex($SALT, $pw) eq $row->[0]);
+            return 1 if (md5_hex($salt, $pw) eq $row->[0]);
         }
     }
 
