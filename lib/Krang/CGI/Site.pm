@@ -129,6 +129,8 @@ sub add {
 
     $t->param(%args) if %args;
 
+    $t->param(enable_cdn_support => EnableCDNSupport);
+
     return $t->output();
 }
 
@@ -561,12 +563,18 @@ sub validate {
 
     my %errors;
 
+    my @optional = qw(cdn_url);
+
     # check all fields
     for my $name (@obj_fields) {
         my $val = $site->{$name};
+
         if (not length $val) {
-            add_alert("error_invalid_$name");
-            $errors{"error_invalid_$name"} = 1;
+            # if it's not an optional field
+            if( ! grep { $_ eq $name } @optional ) {
+                add_alert("error_invalid_$name");
+                $errors{"error_invalid_$name"} = 1;
+            }
             next;
         }
 
