@@ -902,6 +902,9 @@ sub save {
 
     $self->{url} = $self->url();
 
+    # cdn_enabled defaults to false
+    $self->{cdn_enabled} ||= 0;
+
     # check for duplicate url and throw an exception if one found
     $self->duplicate_check();
 
