@@ -14,7 +14,7 @@ sub per_installation {
     my ($self, %args) = @_;
     # remove old files
     $self->remove_files(
-        qw{
+        qw(
             src/Bit-Vector-6.3.tar.gz
             src/ExtUtils-CBuilder-0.280202.tar.gz
             src/ExtUtils-Install-1.54.tar.gz
@@ -25,7 +25,7 @@ sub per_installation {
             src/Linux-Pid-0.03.tar.gz
             src/Unicode-Normalize-1.04.tar.gz
             src/Apache-MOD_PERL/apache_1.3.41.tar.gz
-        };
+        )
     );
 
 }
