@@ -2,6 +2,14 @@
 
 This document contains a list of changes for each release of Krang.
 
+=head2 3.27 - ?
+
+=over
+
+=item *
+
+Upgraded Scalar-List-Utils package to 1.55
+
 =head2 3.26 - June 28, 2020
 
 =over
