@@ -10,6 +10,10 @@ This document contains a list of changes for each release of Krang.
 
 Upgraded Scalar-List-Utils package to 1.55
 
+=item *
+
+Load AddOns InitHandler in krang_apachectl so modules can be overridden
+
 =head2 3.26 - June 28, 2020
 
 =over

@@ -104,6 +104,11 @@ END
 }
 
 use Krang::ClassFactory qw(pkg);
+use Krang::ClassLoader 'AddOn';
+
+# load Addons as early as we can
+BEGIN { pkg('AddOn')->call_handler('InitHandler') };
+
 use Krang::ClassLoader Conf => qw(KrangRoot InstanceHostName Skin KrangUser KrangGroup EnableSSL EnablePreviewEditor
   InstanceApacheAddr InstanceApachePort InstanceSSLCertificateFile
   InstanceSSLCertificateKeyFile InstanceSSLCertificateChainFile
