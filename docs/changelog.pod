@@ -8,6 +8,10 @@ This document contains a list of changes for each release of Krang.
 
 =item *
 
+Allow ApacheMaxSize to be set to 0 and set no limit
+
+=item *
+
 Upgraded Scalar-List-Utils package to 1.55
 
 =item *

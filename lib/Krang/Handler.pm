@@ -61,8 +61,9 @@ use URI::Escape qw(uri_escape);
 
 BEGIN { pkg('AddOn')->call_handler('InitHandler') }
 
-if (ApacheMaxSize) {
-    Apache::SizeLimit->set_max_process_size(ApacheMaxSize);
+if (defined ApacheMaxSize) {
+    # allow ApacheMaxSize to be set to 0 and set no limit
+    Apache::SizeLimit->set_max_process_size(ApacheMaxSize) if ApacheMaxSize;
 } elsif (!defined ApacheMaxSize) {
     Apache::SizeLimit->set_max_process_size(64000);    # 64MB by default
 }
