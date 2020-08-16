@@ -26,24 +26,25 @@ Krang::Group - Interface to manage Krang permissions
             2  => 'edit',
             23 => 'hide'
         },
-        may_publish          => 1,
-        may_checkin_all      => 1,
-        admin_users          => 1,
-        admin_users_limited  => 1,
-        admin_groups         => 1,
-        admin_contribs       => 1,
-        admin_sites          => 1,
-        admin_categories     => 1,
-        admin_categories_ftp => 1,
-        admin_jobs           => 1,
-        admin_scheduler      => 1,
-        admin_desks          => 1,
-        admin_lists          => 1,
-        admin_delete         => 1,
-        may_view_trash       => 1,
-        asset_story          => 'edit',
-        asset_media          => 'read-only',
-        asset_template       => 'hide'
+        may_publish             => 1,
+        may_checkin_all         => 1,
+        admin_users             => 1,
+        admin_users_limited     => 1,
+        admin_groups            => 1,
+        admin_contribs          => 1,
+        admin_sites             => 1,
+        admin_categories        => 1,
+        admin_categories_ftp    => 1,
+        admin_jobs              => 1,
+        admin_scheduler         => 1,
+        admin_desks             => 1,
+        admin_lists             => 1,
+        admin_delete            => 1,
+        may_view_trash          => 1,
+        may_skip_related_assets => 1,
+        asset_story             => 'edit',
+        asset_media             => 'read-only',
+        asset_template          => 'hide'
     );
 
     # Retrieve an existing group by ID
@@ -68,27 +69,28 @@ Krang::Group - Interface to manage Krang permissions
     my $group_id = $self->group_id();
 
     # Accessors/Mutators
-    my $name                 = $group->name();
-    my $may_publish          = $group->may_publish();
-    my $may_checkin_all      = $group->may_checkin_all();
-    my $admin_users          = $group->admin_users();
-    my $admin_users_limited  = $group->admin_users_limited();
-    my $admin_groups         = $group->admin_groups();
-    my $admin_contribs       = $group->admin_contribs();
-    my $admin_sites          = $group->admin_sites();
-    my $admin_categories     = $group->admin_categories();
-    my $admin_categories_ftp = $group->admin_categories_ftp();
-    my $admin_jobs           = $group->admin_jobs();
-    my $admin_scheduler      = $group->admin_scheduler();
-    my $admin_desks          = $group->admin_desks();
-    my $admin_desks          = $group->admin_lists();
-    my $admin_delete         = $group->admin_delete();
-    my $may_view_trash       = $group->may_view_trash();
-    my $asset_story          = $group->asset_story();
-    my $asset_media          = $group->asset_media();
-    my $asset_template       = $group->asset_template();
-    my %categories           = $group->categories();
-    my %desks                = $group->desks();
+    my $name                    = $group->name();
+    my $may_publish             = $group->may_publish();
+    my $may_checkin_all         = $group->may_checkin_all();
+    my $admin_users             = $group->admin_users();
+    my $admin_users_limited     = $group->admin_users_limited();
+    my $admin_groups            = $group->admin_groups();
+    my $admin_contribs          = $group->admin_contribs();
+    my $admin_sites             = $group->admin_sites();
+    my $admin_categories        = $group->admin_categories();
+    my $admin_categories_ftp    = $group->admin_categories_ftp();
+    my $admin_jobs              = $group->admin_jobs();
+    my $admin_scheduler         = $group->admin_scheduler();
+    my $admin_desks             = $group->admin_desks();
+    my $admin_desks             = $group->admin_lists();
+    my $admin_delete            = $group->admin_delete();
+    my $may_view_trash          = $group->may_view_trash();
+    my $may_skip_related_assets = $group->may_skip_related_assets();
+    my $asset_story             = $group->asset_story();
+    my $asset_media             = $group->asset_media();
+    my $asset_template          = $group->asset_template();
+    my %categories              = $group->categories();
+    my %desks                   = $group->desks();
 
     # Category permissions cache management
     pkg('Group')->add_category_permissions($category);
@@ -152,6 +154,7 @@ use constant FIELDS => qw( name
   admin_lists
   admin_delete
   may_view_trash
+  may_skip_related_assets
   asset_story
   asset_media
   asset_template );
@@ -240,6 +243,8 @@ using Boolean (1 or 0) values:
 
 =item admin_lists
 
+=item may_skip_related_assets
+
 =back
 
 =cut
@@ -250,24 +255,25 @@ sub init {
 
     # Set up default values
     my %defaults = (
-        name                 => "",
-        may_publish          => 0,
-        may_checkin_all      => 0,
-        admin_users          => 0,
-        admin_users_limited  => 0,
-        admin_groups         => 0,
-        admin_contribs       => 0,
-        admin_sites          => 0,
-        admin_categories     => 0,
-        admin_categories_ftp => 0,
-        admin_jobs           => 0,
-        admin_scheduler      => 0,
-        admin_desks          => 0,
-        admin_lists          => 0,
-        asset_story          => 'edit',
-        asset_media          => 'edit',
-        asset_template       => 'edit',
-        group_uuid           => pkg('UUID')->new(),
+        name                    => "",
+        may_publish             => 0,
+        may_checkin_all         => 0,
+        admin_users             => 0,
+        admin_users_limited     => 0,
+        admin_groups            => 0,
+        admin_contribs          => 0,
+        admin_sites             => 0,
+        admin_categories        => 0,
+        admin_categories_ftp    => 0,
+        admin_jobs              => 0,
+        admin_scheduler         => 0,
+        admin_desks             => 0,
+        admin_lists             => 0,
+        may_skip_related_assets => 0,
+        asset_story             => 'edit',
+        asset_media             => 'edit',
+        asset_template          => 'edit',
+        group_uuid              => pkg('UUID')->new(),
     );
 
     # Set up defaults for category and desk permissions
@@ -740,24 +746,25 @@ sub serialize_xml {
         $set->add(object => (pkg('Desk')->find(desk_id => $desk_id))[0], from => $self);
     }
 
-    $writer->dataElement(may_publish          => $self->{may_publish});
-    $writer->dataElement(may_checkin_all      => $self->{may_checkin_all});
-    $writer->dataElement(admin_users          => $self->{admin_users});
-    $writer->dataElement(admin_users_limited  => $self->{admin_users_limited});
-    $writer->dataElement(admin_groups         => $self->{admin_groups});
-    $writer->dataElement(admin_contribs       => $self->{admin_contribs});
-    $writer->dataElement(admin_sites          => $self->{admin_sites});
-    $writer->dataElement(admin_categories     => $self->{admin_categories});
-    $writer->dataElement(admin_categories_ftp => $self->{admin_categories_ftp});
-    $writer->dataElement(admin_jobs           => $self->{admin_jobs});
-    $writer->dataElement(admin_scheduler      => $self->{admin_scheduler});
-    $writer->dataElement(admin_desks          => $self->{admin_desks});
-    $writer->dataElement(admin_lists          => $self->{admin_lists});
-    $writer->dataElement(admin_delete         => $self->{admin_delete});
-    $writer->dataElement(may_view_trash       => $self->{may_view_trash});
-    $writer->dataElement(asset_story          => $self->{asset_story});
-    $writer->dataElement(asset_media          => $self->{asset_media});
-    $writer->dataElement(asset_template       => $self->{asset_template});
+    $writer->dataElement(may_publish             => $self->{may_publish});
+    $writer->dataElement(may_checkin_all         => $self->{may_checkin_all});
+    $writer->dataElement(admin_users             => $self->{admin_users});
+    $writer->dataElement(admin_users_limited     => $self->{admin_users_limited});
+    $writer->dataElement(admin_groups            => $self->{admin_groups});
+    $writer->dataElement(admin_contribs          => $self->{admin_contribs});
+    $writer->dataElement(admin_sites             => $self->{admin_sites});
+    $writer->dataElement(admin_categories        => $self->{admin_categories});
+    $writer->dataElement(admin_categories_ftp    => $self->{admin_categories_ftp});
+    $writer->dataElement(admin_jobs              => $self->{admin_jobs});
+    $writer->dataElement(admin_scheduler         => $self->{admin_scheduler});
+    $writer->dataElement(admin_desks             => $self->{admin_desks});
+    $writer->dataElement(admin_lists             => $self->{admin_lists});
+    $writer->dataElement(admin_delete            => $self->{admin_delete});
+    $writer->dataElement(may_view_trash          => $self->{may_view_trash});
+    $writer->dataElement(may_skip_related_assets => $self->{may_skip_related_assets});
+    $writer->dataElement(asset_story             => $self->{asset_story});
+    $writer->dataElement(asset_media             => $self->{asset_media});
+    $writer->dataElement(asset_template          => $self->{asset_template});
 
     # all done
     $writer->endTag('group');
@@ -1415,43 +1422,47 @@ that particular function.  Following is the list of functions:
 
 =item may_view_trash
 
+=item may_skip_related_assets
+
 =back
 
 This method combines the permissions of all the groups with which the user
 is affiliated.  Group permissions are combined using a "most privilege"
 algorithm.  In other words, if a user is assigned to the following groups:
 
-    Group A => may_publish         => 1
-               may_checkin_all     => 0
-               admin_users         => 1
-               admin_users_limited => 1
-               admin_groups        => 0
-               admin_contribs      => 1
-               admin_sites         => 0
-               admin_categories    => 1
-               admin_categories_ftp    => 1
-               admin_jobs          => 1
-               admin_scheduler     => 1
-               admin_desks         => 0
-               admin_lists         => 0
-               admin_delete        => 0
-               may_view_trash      => 0
+    Group A => may_publish              => 1
+               may_checkin_all          => 0
+               admin_users              => 1
+               admin_users_limited      => 1
+               admin_groups             => 0
+               admin_contribs           => 1
+               admin_sites              => 0
+               admin_categories         => 1
+               admin_categories_ftp     => 1
+               admin_jobs               => 1
+               admin_scheduler          => 1
+               admin_desks              => 0
+               admin_lists              => 0
+               admin_delete             => 0
+               may_view_trash           => 0
+               may_skip_related_assets  => 0
 
-    Group B => may_publish         => 0
-               may_checkin_all     => 1
-               admin_users         => 1
-               admin_users_limited => 0
-               admin_groups        => 1
-               admin_contribs      => 0
-               admin_sites         => 0
-               admin_categories    => 0
-               admin_categories_ftp    => 0
-               admin_jobs          => 1
-               admin_scheduler     => 1
-               admin_desks         => 1
-               admin_lists         => 0
-               admin_delete        => 1
-               may_view_trash      => 1
+    Group B => may_publish              => 0
+               may_checkin_all          => 1
+               admin_users              => 1
+               admin_users_limited      => 0
+               admin_groups             => 1
+               admin_contribs           => 0
+               admin_sites              => 0
+               admin_categories         => 0
+               admin_categories_ftp     => 0
+               admin_jobs               => 1
+               admin_scheduler          => 1
+               admin_desks              => 1
+               admin_lists              => 0
+               admin_delete             => 1
+               may_view_trash           => 1
+               may_skip_related_assets  => 0
 
 In this case, the resultant permissions for this user will be:
 
@@ -1470,6 +1481,7 @@ In this case, the resultant permissions for this user will be:
     admin_lists             => 0
     admin_delete            => 1
     may_view_trash          => 1
+    may_skip_related_assets => 0
 
 (N.B.:  The admin function "admin_users_limited" is deemed to be a high
 privilege when it is set to 0 -- not 1.)
@@ -1510,7 +1522,8 @@ sub user_admin_permissions {
       admin_desks
       admin_lists
       admin_delete
-      may_view_trash);
+      may_view_trash
+      may_skip_related_assets);
 
     my %admin_perm_access = ();
 

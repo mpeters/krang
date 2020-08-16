@@ -65,8 +65,9 @@ use constant CHECKBOX_FIELDS => qw( may_publish
   admin_scheduler
   admin_desks
   admin_lists
-  admin_delete 
-  may_view_trash);
+  admin_delete
+  may_view_trash
+  may_skip_related_assets);
 use constant GROUP_PROTOTYPE => {
     group_id       => '',
     name           => '',
@@ -123,7 +124,7 @@ based on the group name.
 From this mode users may edit a group, add a new group, or delete a set of groups.
 
 This run-mode expects an optional parameters "search_filter"
-which is expected to contain the text string which is used to 
+which is expected to contain the text string which is used to
 query groups.
 
 =cut
@@ -306,7 +307,7 @@ sub save_stay {
 
 =item cancel
 
-Cancel editing (or adding) a group.  Abandon changes and 
+Cancel editing (or adding) a group.  Abandon changes and
 return to search screen.
 
 =cut
@@ -373,7 +374,7 @@ sub delete {
 =item delete_selected
 
 Delete a set of groups, specified by check-mark
-on the "Group List" screen provided by the "search" 
+on the "Group List" screen provided by the "search"
 run-mode.  Return to the "search" run-mode.
 
 This mode expects the query param "krang_pager_rows_checked"
@@ -411,7 +412,7 @@ sub delete_selected {
 
 =item save_and_edit_categories
 
-Save the CGI query params to the group and redirect the user 
+Save the CGI query params to the group and redirect the user
 to the edit category permissions screen.
 
 =cut
@@ -432,7 +433,7 @@ sub save_and_edit_categories {
 =item edit_categories
 
 Present a list of categories and assigned permissions.
-Allow the user to edit permissions for categories, 
+Allow the user to edit permissions for categories,
 add, and remove categories.
 
 
@@ -574,7 +575,7 @@ sub delete_category {
 
 =item edit_categories_return
 
-Save category permissions to group object in session and return to 
+Save category permissions to group object in session and return to
 edit group mode.
 
 

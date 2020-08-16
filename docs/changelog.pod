@@ -8,6 +8,10 @@ This document contains a list of changes for each release of Krang.
 
 =item *
 
+Added new C<may_skip_related_assets> group permission flag
+
+=item *
+
 Allow ApacheMaxSize to be set to 0 and set no limit
 
 =item *
