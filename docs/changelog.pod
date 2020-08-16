@@ -12,6 +12,11 @@ Added new C<may_skip_related_assets> group permission flag
 
 =item *
 
+Added new "Skip Related Assets" button during publish to be used with caution
+(and only with the C<may_skip_related_assets>).
+
+=item *
+
 Allow ApacheMaxSize to be set to 0 and set no limit
 
 =item *

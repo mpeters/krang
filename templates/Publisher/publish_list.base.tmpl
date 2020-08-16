@@ -8,16 +8,10 @@ Krang.onload( function() {
 
 <h2>
 
-<tmpl_if stories><!--(db2)hack plural:-->
-  <tmpl_loop stories>
-    <tmpl_if __first__>
-      <tmpl_if __last__>
-        <tmpl_lang Publish Story>
-      <tmpl_else>
-        <tmpl_lang Publish Stories>
-      </tmpl_if>
-    </tmpl_if>
-  </tmpl_loop>
+<tmpl_if multiple_stories>
+  <tmpl_lang Publish Stories>
+<tmpl_else>
+  <tmpl_lang Publish Story>
 </tmpl_if>
 
 <tmpl_if media>
@@ -34,6 +28,7 @@ Krang.onload( function() {
 <form name="pub" action="publisher.pl" method="post" class="non_ajax">
 
 <input name="rm" value="publish_assets" type="hidden">
+<input name="skip_related_assets" value="0" type="hidden">
 <tmpl_loop asset_id_list>
   <input name="asset_id_list" value="<tmpl_var escape=html id>" type="hidden">
 </tmpl_loop>
@@ -158,10 +153,21 @@ Krang.onload( function() {
 </table>
 
 <div class="panel capped">
+<tmpl_if may_skip_related_assets><tmpl_if multiple_stories>
+<input value="<tmpl_lang Skip Related Assets>" name="Skip Related Assets" type="submit" onclick="set_skip_related_assets()" class="alert west">
+</tmpl_if></tmpl_if>
 <input value="<tmpl_lang Publish>" name="Publish" type="submit">
 </div>
 
 </form>
+
+<tmpl_if may_skip_related_assets>
+<script type="text/javascript">
+set_skip_related_assets = function() {
+    document.forms['pub'].elements['skip_related_assets'].value = 1;
+}
+</script>
+</tmpl_if>
 
 <tmpl_include footer.tmpl>
 

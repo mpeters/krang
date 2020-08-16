@@ -13,7 +13,7 @@ None.
 
 =head1 DESCRIPTION
 
-This application provides a frontend to Krang::Publisher 
+This application provides a frontend to Krang::Publisher
 
 =head1 INTERFACE
 
@@ -99,8 +99,12 @@ sub publish_story {
 
     add_message('checked_out_assets') if ($checked_out);
 
-    $t->param(stories => $stories, media => $media);
-    $t->param(asset_id_list => [{id => "story_$story_id"}]);
+    $t->param(
+        stories          => $stories,
+        media            => $media,
+        multiple_stories => scalar @$stories > 1,
+        asset_id_list    => [{id => "story_$story_id"}],
+    );
 
     # add date chooser
     $t->param(
@@ -108,7 +112,8 @@ sub publish_story {
             name     => 'publish_date',
             query    => $query,
             onchange => "this.form['publish_now'][1].checked = true", # when a date is selected, auto-select "Schedule For..." radio button
-        )
+        ),
+        may_skip_related_assets => pkg('Group')->user_admin_permissions('may_skip_related_assets'),
     );
 
     return $t->output();
@@ -233,7 +238,7 @@ sub publish_story_list {
 
 Starts the publish process for a given set of stories stories specified by the CGI parameter 'asset_publish_list'.
 
-B<NOTE>: 'asset_publish_list' does not necessarily contain all items listed when the publish process is initiated - it only lists 
+B<NOTE>: 'asset_publish_list' does not necessarily contain all items listed when the publish process is initiated - it only lists
 
 Requires the following parameters: story_ids, publish_now, publish_date_xxx (if publish_now == 0)
 
@@ -250,6 +255,7 @@ sub publish_assets {
     my @asset_id_list = ($query->param('asset_id_list'));
     croak("Missing required asset_id_list parameter") unless @asset_id_list;
     my $publish_now = $query->param('publish_now');
+    my $skip_related_assets = pkg('Group')->user_admin_permissions('may_skip_related_assets') ? $query->param('skip_related_assets') || 0 : 0;
 
     my @story_id_list;
     my @media_id_list;
@@ -271,7 +277,7 @@ sub publish_assets {
     @media_list = pkg('Media')->find(media_id => \@media_id_list) if @media_id_list;
 
     if ($publish_now) {
-        $self->_publish_assets_now(\@story_list, \@media_list);
+        $self->_publish_assets_now(\@story_list, \@media_list, $skip_related_assets);
     } else {
 
         # pass things to the scheduler
@@ -700,7 +706,7 @@ sub _build_asset_list {
 #
 sub _publish_assets_now {
     my $self = shift;
-    my ($story_list, $media_list) = @_;
+    my ($story_list, $media_list, $skip_related_assets) = @_;
     my $query = $self->query;
 
     # this is a no-parse header script
@@ -725,8 +731,9 @@ sub _publish_assets_now {
             pkg('Session')->unlock();
             eval {
                 $publisher->publish_story(
-                    story    => $story_list,
-                    callback => \&_progress_callback
+                    story                  => $story_list,
+                    callback               => \&_progress_callback,
+                    disable_related_assets => $skip_related_assets,
                 );
             };
             my $err = $@;
