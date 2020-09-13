@@ -813,7 +813,7 @@ Krang.Form = {
     },
     submit : function(form, inputs, options) {
         form = Krang.Form.get_form(form);
-        var form_name = form.name;
+        var form_name = form.readAttribute('name');
         Krang.Form._submitting[form_name] = true;
         if( inputs ) Krang.Form.set(form, inputs);
 
@@ -829,12 +829,12 @@ Krang.Form = {
             }
 
             // save the old target of the form so we can restore it after submission
-            var old_target = form.target;
-            var old_action = form.action;
-            form.target = options.new_window_name ? options.new_window_name : '_blank';
+            var old_target = form.readAttribute('target');
+            var old_action = form.readAttribute('action');
+            form.writeAttribute('target', options.new_window_name ? options.new_window_name : '_blank');
             form.submit();
-            form.target = old_target;
-            form.action = old_action;
+            form.writeAttribute('target', old_target);
+            form.writeAttribute('action', old_action);
         } else {
             Krang.show_indicator(options.indicator);
 
@@ -844,7 +844,7 @@ Krang.Form = {
 
             if( use_ajax ) {
                 var url;
-                if( form.action ) {
+                if( form.readAttribute('action') ) {
                     url = form.readAttribute('action');
                 } else {
                     url = document.URL;
@@ -857,7 +857,7 @@ Krang.Form = {
                     Krang.Ajax.update({
                         url        : url,
                         params     : Form.serialize(form, true),
-                        method     : form.method,
+                        method     : form.readAttribute('method'),
                         target     : options.target,
                         to_top     : options.to_top,
                         onComplete : function(args, response, json) {
@@ -872,23 +872,23 @@ Krang.Form = {
                     Krang.Ajax.request({
                         url        : url,
                         params     : Form.serialize(form, true),
-                        method     : form.method,
+                        method     : form.readAttribute('method'),
                         onComplete : function(args, response, json) {
                             complete(args, response, json);
-                            Krang.Form._submitting[form.name] = false;
-                            if(document.forms[form.name]) Krang.Form.study(form.name);
+                            Krang.Form._submitting[form_name] = false;
+                            if(document.forms[form_name]) Krang.Form.study(form_name);
                         },
                         onSuccess  : options['onSuccess'],
                         onFailure  : options['onFailure']
                     });
                 }
             } else {
-                if(Krang.Ajax.is_double_click(form.action, Form.serialize(form, true))) {
-                    Krang.Form._submitting[form.name] = false;
+                if(Krang.Ajax.is_double_click(form.readAttribute('action'), Form.serialize(form, true))) {
+                    Krang.Form._submitting[form_name] = false;
                     Krang.hide_indicator(options.indicator);
                 } else {
                     form.submit();
-                    Krang.Form._submitting[form.name] = false;
+                    Krang.Form._submitting[form_name] = false;
                     Krang.hide_indicator(options.indicator);
                 }
             }
@@ -897,7 +897,7 @@ Krang.Form = {
     is_submitting : function(form) {
         form = Krang.Form.get_form(form);
         if( form ) {
-            return Krang.Form._submitting[form.name] ? true : false;
+            return Krang.Form._submitting[form.readAttribute('name')] ? true : false;
         } else {
             return false;
         }

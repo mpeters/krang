@@ -2,7 +2,17 @@
 
 This document contains a list of changes for each release of Krang.
 
-=head2 3.27 - ?
+=head2 3.28
+
+=over
+
+=item *
+
+Fix bug in JS that caused problems with forms with inputs named "method", "action" or "target".
+
+=back
+
+=head2 3.27 - Aug 16, 2020
 
 =over
 
@@ -26,6 +36,8 @@ Upgraded Scalar-List-Utils package to 1.55
 =item *
 
 Load AddOns InitHandler in krang_apachectl so modules can be overridden
+
+=back
 
 =head2 3.26 - June 28, 2020
 
