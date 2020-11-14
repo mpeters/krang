@@ -100,18 +100,15 @@ sub publish_story {
     add_message('checked_out_assets') if ($checked_out);
 
     $t->param(
-        stories          => $stories,
-        media            => $media,
-        multiple_stories => scalar @$stories > 1,
-        asset_id_list    => [{id => "story_$story_id"}],
-    );
-
-    # add date chooser
-    $t->param(
+        stories              => $stories,
+        media                => $media,
+        multiple_stories     => scalar @$stories > 1,
+        asset_id_list        => [{id => "story_$story_id"}],
         publish_date_chooser => datetime_chooser(
-            name     => 'publish_date',
-            query    => $query,
-            onchange => "this.form['publish_now'][1].checked = true", # when a date is selected, auto-select "Schedule For..." radio button
+            name  => 'publish_date',
+            query => $query,
+            onchange =>
+              "this.form['publish_now'][1].checked = true",  # when a date is selected, auto-select "Schedule For..." radio button
         ),
         may_skip_related_assets => pkg('Group')->user_admin_permissions('may_skip_related_assets'),
     );
@@ -204,18 +201,16 @@ sub publish_story_list {
     add_message('checked_out_assets') if ($checked_out);
 
     $t->param(
-        stories       => $stories,
-        media         => $media,
-        asset_id_list => \@id_list,
-    );
-
-    # add date chooser
-    $t->param(
-        publish_date_chooser => datetime_chooser(
+        stories                 => $stories,
+        multiple_stories        => scalar @$stories > 1,
+        media                   => $media,
+        asset_id_list           => \@id_list,
+        may_skip_related_assets => pkg('Group')->user_admin_permissions('may_skip_related_assets'),
+        publish_date_chooser    => datetime_chooser(
             name     => 'publish_date',
             query    => $query,
             onchange => "this.form['publish_now'][1].checked = true"
-        )
+        ),
     );
 
     # setup return form

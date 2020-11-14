@@ -112,7 +112,10 @@ sub show {
 
     # permissions
     my %admin_perms = pkg('Group')->user_admin_permissions();
-    $template->param(may_publish => $admin_perms{may_publish});
+    $template->param(
+        may_publish             => $admin_perms{may_publish},
+        may_skip_related_assets => pkg('Group')->user_admin_permissions('may_skip_related_assets'),
+    );
 
     # localize labels
     my $labels = {

@@ -19,8 +19,12 @@ edit = function(id) {
     Krang.Form.submit('krang_pager_form', { rm: 'goto_edit', id: id });
 }
 
-publish_story = function(id) {
-    Krang.Form.submit('publish_story_form', { story_id: id });
+publish_story = function(id, skip_related_assets) {
+    if( skip_related_assets ) {
+        Krang.Form.submit('publish_story_without_assets_form', { asset_id_list: 'story_' + id });
+    } else {
+        Krang.Form.submit('publish_story_form', { story_id: id });
+    }
 }
 
 move = function(id, desk) {
@@ -53,7 +57,7 @@ move_checked = function(desk_id) {
     } else {
         var form = document.forms['krang_pager_form'];
         $A(form.elements['krang_pager_rows_checked']).each(
-            function(e) { 
+            function(e) {
                 if(e.checked) {
                     form.elements['move_' + e.value] = desk_id;
                 }
@@ -152,11 +156,23 @@ move_checked = function(desk_id) {
     <tmpl_else>
       <tmpl_var command_column>
       <tmpl_if may_publish>
-      <li><input value="<tmpl_lang Publish>" onclick="publish_story('<tmpl_var escape=html story_id>')" type="button" class="button"></li>
+        <tmpl_if may_skip_related_assets>
+            <li class="menu">
+              <input value="<tmpl_lang Publish> &#9660;" onclick="return false;" type="button" class="button">
+              <ul>
+                <li><a href="#" onclick="publish_story('<tmpl_var escape=html story_id>')"><tmpl_lang Full></a></li>
+                <li><a class="alert" href="#" onclick="publish_story('<tmpl_var escape=html story_id>', true)"><tmpl_lang Skip Related Assets></a></li>
+              </ul>
+            </li>
+        <tmpl_else>
+          <li>
+            <input value="<tmpl_lang Publish>" onclick="publish_story('<tmpl_var escape=html story_id>')" type="button" class="button">
+          </li>
+        </tmpl_if>
       </tmpl_if>
 
       <tmpl_if desk_loop>
-        <li class="menu"> 
+        <li class="menu">
           <input value="<tmpl_lang Move To> &#9660;" onclick="return false;" type="button" class="button">
           <ul>
             <tmpl_loop desk_loop>
@@ -213,6 +229,18 @@ move_checked = function(desk_id) {
   <form name="publish_story_form" id="publish_story_form" action="publisher.pl">
   <input name="rm" value="publish_story" type="hidden">
   <input name="story_id" value="" type="hidden">
+  </form>
+
+  <form name="publish_story_without_assets_form" id="publish_story_without_assets_form" action="publisher.pl" method="post" class="non_ajax">
+  <input name="rm" value="publish_assets" type="hidden">
+  <input name="skip_related_assets" value="1" type="hidden">
+  <input name="asset_id_list" value="" type="hidden">
+  <input name="publish_now" value="1" type="hidden">
+  <input name="return_script" value="<tmpl_var escape=html return_script>" type="hidden">
+  <tmpl_loop return_params_loop>
+    <input name="return_params" value="<tmpl_var escape=html name>" type="hidden">
+    <input name="return_params" value="<tmpl_var escape=html value>" type="hidden">
+  </tmpl_loop>
   </form>
 </tmpl_unless>
 
